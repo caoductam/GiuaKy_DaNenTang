@@ -5,8 +5,7 @@ import { StorageService } from './services/storage';
 import './App.css';
 
 function App() {
-  // State management
-  const [screen, setScreen] = useState('list'); // 'list' hoặc 'add'
+  const [screen, setScreen] = useState('list');
   const [notes, setNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
@@ -24,9 +23,8 @@ function App() {
     try {
       const loadedNotes = await StorageService.getNotes();
       setNotes(loadedNotes);
-      console.log('✅ Loaded notes:', loadedNotes.length);
     } catch (error) {
-      console.error('❌ Error loading notes:', error);
+      console.error('Error loading notes:', error);
       alert('Có lỗi xảy ra khi tải ghi chú!');
     } finally {
       setIsLoading(false);
@@ -37,70 +35,51 @@ function App() {
    * Chuyển sang màn hình thêm ghi chú mới
    */
   const handleAddNote = () => {
-    console.log('➕ Opening add note screen');
     setEditingNote(null);
     setScreen('add');
   };
 
   /**
    * Chuyển sang màn hình sửa ghi chú
-   * @param {Object} note - Ghi chú cần sửa
    */
   const handleEditNote = (note) => {
-    console.log('✏️ Opening edit note screen for:', note.id);
     setEditingNote(note);
     setScreen('add');
   };
 
   /**
    * Lưu ghi chú (thêm mới hoặc cập nhật)
-   * @param {string} content - Nội dung ghi chú
    */
   const handleSaveNote = async (content) => {
     try {
       if (editingNote) {
-        // Cập nhật ghi chú hiện có
-        console.log('💾 Updating note:', editingNote.id);
         await StorageService.updateNote(editingNote.id, content);
       } else {
-        // Thêm ghi chú mới
-        console.log('💾 Saving new note');
         await StorageService.saveNote(content);
       }
-      
-      // Reload danh sách và quay về màn hình chính
       await loadNotes();
       setScreen('list');
       setEditingNote(null);
-      
-      console.log('✅ Note saved successfully');
     } catch (error) {
-      console.error('❌ Error saving note:', error);
       throw error;
     }
   };
 
   /**
    * Xóa ghi chú
-   * @param {string} id - ID của ghi chú cần xóa
    */
   const handleDeleteNote = async (id) => {
     const confirmed = window.confirm(
-      '⚠️ Bạn có chắc chắn muốn xóa ghi chú này?\n\nHành động này không thể hoàn tác!'
+      '⚠️ Bạn có chắc chắn muốn xóa ghi chú này?\nHành động này không thể hoàn tác!'
     );
     
     if (confirmed) {
       try {
-        console.log('🗑️ Deleting note:', id);
         await StorageService.deleteNote(id);
         await loadNotes();
-        console.log('✅ Note deleted successfully');
       } catch (error) {
-        console.error('❌ Error deleting note:', error);
         alert('❌ Có lỗi xảy ra khi xóa ghi chú!');
       }
-    } else {
-      console.log('❌ Delete cancelled by user');
     }
   };
 
@@ -108,12 +87,10 @@ function App() {
    * Quay lại màn hình danh sách
    */
   const handleBack = () => {
-    console.log('⬅️ Returning to notes list');
     setScreen('list');
     setEditingNote(null);
   };
 
-  // Render màn hình tương ứng
   return (
     <div className="app">
       {screen === 'list' ? (
